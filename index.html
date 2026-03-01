@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLH Administrator Directory - Firebase Connected</title>
+    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+     <link rel="icon" type="image/x-icon" href="phonebook.ico">
+    <link rel="shortcut icon" href="phonebook.ico">
+    <link rel="apple-touch-icon" href="phonebook.ico">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #fbbf24 100%);
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 2000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: slideIn 1s ease-out;
+            padding: 0 30px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 0 -30px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .search-add-container {
+            padding: 20px 0;
+            background: linear-gradient(to right, #f8fafc, #e2e8f0);
+            border-bottom: 2px solid #fbbf24;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin: 0 -30px;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        .search-filter-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            flex: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: scale(1.02);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .add-employee-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .add-employee-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .stats {
+            padding: 20px 0;
+            background: linear-gradient(to right, #1e40af, #3b82f6);
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0 -30px;
+        }
+
+        .loading {
+            display: block;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 70vh;
+            position: relative;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin: 20px 0;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(to right, #fef3c7, #fde68a);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            position: relative;
+        }
+
+        tbody tr.birthday-row {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+            color: white;
+            animation: birthdayGlow 2s ease-in-out infinite alternate;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
+            z-index: 10;
+            position: relative;
+        }
+
+        @keyframes birthdayGlow {
+            0% { box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5); }
+            100% { box-shadow: 0 15px 40px rgba(251, 191, 36, 0.8); }
+        }
+
+        .birthday-row td {
+            color: white !important;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+            border-right: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fbbf24;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: #3b82f6;
+        }
+
+        .avatar.birthday-month {
+            animation: vibrate 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes vibrate {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            50% { transform: translateX(2px); }
+            75% { transform: translateX(-1px); }
+            100% { transform: translateX(1px); }
+        }
+
+        .fullname-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .fullname {
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 16px;
+        }
+
+        .job-employment {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .job-description {
+            font-size: 12px;
+            color: #059669;
+            background: #ecfdf5;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .employment-status {
+            font-size: 12px;
+            color: #7c3aed;
+            background: #f3e8ff;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .birthday-age {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .birthday {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .age {
+            font-size: 12px;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .address {
+            color: #4b5563;
+            line-height: 1.4;
+        }
+
+        .contact-info {
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.4;
+        }
+
+        .hub-location {
+            font-size: 14px;
+            font-weight: 500;
+            color: #7c3aed;
+            background: #f3e8ff;
+            padding: 6px 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .hub-date-combined {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hub-date {
+            font-size: 12px;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .mini-library-status {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .mini-library-status.equipped {
+            color: #047857;
+            background: #ecfdf5;
+        }
+
+        .mini-library-status.not-equipped {
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .mini-library-date {
+            font-size: 12px;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .number-field {
+            background: #ecfdf5;
+            color: #047857;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #6b7280;
+            font-size: 18px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #dc2626;
+            background: #fef2f2;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background: #10b981;
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background: #ef4444;
+            color: white;
+        }
+
+        .birthday-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            z-index: 3000;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: birthdayMessageAnimation 4s ease-in-out forwards;
+            display: none;
+        }
+
+        @keyframes birthdayMessageAnimation {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fbbf24;
+            z-index: 2999;
+            pointer-events: none;
+        }
+
+        .confetti:nth-child(odd) {
+            background: #f59e0b;
+        }
+
+        .confetti:nth-child(3n) {
+            background: #3b82f6;
+        }
+
+        .confetti:nth-child(4n) {
+            background: #10b981;
+        }
+
+        .confetti:nth-child(5n) {
+            background: #ef4444;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 95vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.4s ease-out;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            position: relative;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: scale(1.02);
+        }
+
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #6b7280;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #3b82f6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .field-info {
+            font-size: 12px;
+            color: #dc2626;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Toast Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 3000;
+            animation: toastSlideIn 0.3s ease-out;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastSlideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+        }
+
+        .toast.warning {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fbbf24;
+            margin: 10px 0;
+            display: block;
+        }
+
+        .avatar-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .use-default-btn {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .use-default-btn:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+                padding: 0 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .stats {
+                padding: 15px 0;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+            
+            .search-add-container {
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+                margin: 0 -15px;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .filter-select {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .th, td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+            
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+
+            .table-container {
+                padding: 0;
+            }
+
+            .header {
+                margin: 0 -15px;
+            }
+
+            .birthday-message {
+                font-size: 1.8em;
+                padding: 20px 30px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .toast {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        @keyframes fadeInRow {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInRow 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="connectionStatus" class="connection-status disconnected">
+        🔴 Connecting to Firebase...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>
+                    <div class="logo">🏢</div>
+                    BLH Administrator Directory
+                </h1>
+                <p>Professional database of our BLH administrators - Firebase Connected</p>
+            </div>
+        </div>
+
+        <div class="search-add-container">
+            <div class="search-filter-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search by name, address, or hub location...">
+                </div>
+                <select class="filter-select" id="sortFilter">
+                    <option value="hub">Sort by Hub Location (A-Z)</option>
+                    <option value="firstname">Sort by First Name (A-Z)</option>
+                </select>
+                <select class="filter-select" id="employmentFilter">
+                    <option value="">All Employment Status</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Job Order">Job Order</option>
+                </select>
+                <select class="filter-select" id="miniLibraryFilter">
+                    <option value="">All Mini Library Status</option>
+                    <option value="Equipped">Equipped</option>
+                    <option value="Not Equipped">Not Equipped</option>
+                    <option value="Not Set">Not Set</option>
+                </select>
+            </div>
+            <button class="add-employee-btn" onclick="openAddModal()">
+                ➕ Add Administrator
+            </button>
+        </div>
+
+        <div class="stats">
+            <p>Total Administrators: <strong><span id="totalCount">0</span></strong> | Showing: <strong><span id="showingCount">0</span></strong></p>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading administrator data from Firebase...</p>
+        </div>
+
+        <div id="errorMessage" class="error-message" style="display: none;">
+            <h3>❌ Error Loading Data</h3>
+            <p id="errorText"></p>
+        </div>
+
+        <div class="table-container">
+            <table id="peopleTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Fullname</th>
+                        <th>Birthday & Age</th>
+                        <th>Address</th>
+                        <th>Email & Contact</th>
+                        <th>Hub & Date</th>
+                        <th>Mini Library</th>
+                        <th>No. Of Units</th>
+                        <th>Total No. Per Half</th>
+                        <th>Target Per Half</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div class="no-results" id="noResults" style="display: none;">
+                <p>🔍 No results found. Try adjusting your search terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Birthday Message -->
+    <div id="birthdayMessage" class="birthday-message">
+        🎉 Happy Birthday! 🎂
+    </div>
+
+    <!-- Add Administrator Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Add New Administrator</h2>
+                <span class="close" onclick="closeAddModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addForm">
+                    <div class="form-group">
+                        <label for="addPassword">Enter Password to Continue:</label>
+                        <div class="password-input-container">
+                            <input type="password" id="addPassword" placeholder="Enter password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('addPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <div id="addFormFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="addAvatarUrl">Avatar URL (Optional):</label>
+                            <input type="url" id="addAvatarUrl" placeholder="Paste Google Drive link or image URL" onchange="previewAvatar('add')">
+                            <div class="avatar-controls">
+                                <img id="addAvatarPreview" class="avatar-preview" src="LOGO.png" alt="Avatar Preview">
+                                <button type="button" class="use-default-btn" onclick="useDefaultAvatar('add')">Use Default Avatar</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addFullName">Full Name:</label>
+                                <input type="text" id="addFullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addEmail">Email:</label>
+                                <input type="email" id="addEmail" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addPhone">Phone:</label>
+                                <input type="tel" id="addPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addBirthday">Birthday:</label>
+                                <input type="date" id="addBirthday" required>
+                            </div>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="addHideBirthday">
+                            <label for="addHideBirthday">Hide Birthday in Table</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="addAddress">Address:</label>
+                            <textarea id="addAddress" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addHubLocation">Hub Location:</label>
+                                <select id="addHubLocation" required>
+                                    <option value="">Select Hub Location</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="addHubDate">Hub Date (Optional):</label>
+                                <input type="date" id="addHubDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addGender">Gender:</label>
+                                <select id="addGender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="addJobDescription">Job Description:</label>
+                                <input type="text" id="addJobDescription" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="addEmploymentStatus">Employment Status:</label>
+                            <select id="addEmploymentStatus" required>
+                                <option value="">Select Employment Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Casual">Casual</option>
+                                <option value="Job Order">Job Order</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addMiniLibrary">Mini Library Status:</label>
+                                <select id="addMiniLibrary" required onchange="toggleMiniLibraryDate('add')">
+                                    <option value="">Select Status</option>
+                                    <option value="Equipped">Equipped</option>
+                                    <option value="Not Equipped">Not Equipped</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="addMiniLibraryDateGroup" style="display: none;">
+                                <label for="addMiniLibraryDate">Mini Library Date:</label>
+                                <input type="date" id="addMiniLibraryDate">
+                            </div>
+                        </div>
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label for="addNoOfUnits">No. Of Units:</label>
+                                <input type="number" id="addNoOfUnits" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addTotalNoPerHalf">Total No. Per Half:</label>
+                                <input type="number" id="addTotalNoPerHalf" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addTargetPerHalf">Target Per Half:</label>
+                                <input type="number" id="addTargetPerHalf" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addUsername">Username:</label>
+                                <input type="text" id="addUsername" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addUserPassword">User Password:</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="addUserPassword" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('addUserPassword')">👁️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="validateAddPassword()">Continue</button>
+                <button type="button" class="btn btn-success" id="addSubmitBtn" onclick="submitAdd()" style="display: none;">Add Administrator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Administrator Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Edit Administrator</h2>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div id="editAuthSection">
+                        <div class="form-group">
+                            <label for="editAuthType">Authentication Type:</label>
+                            <select id="editAuthType" onchange="toggleEditAuth()">
+                                <option value="">Select Authentication Type</option>
+                                <option value="superadmin">Super Admin</option>
+                                <option value="blhadmin">BLH Admin</option>
+                            </select>
+                        </div>
+                        <div id="superAdminAuth" style="display: none;">
+                            <div class="form-group">
+                                <label for="editSuperPassword">Super Admin Password:</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="editSuperPassword" placeholder="Enter super admin password">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('editSuperPassword')">👁️</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="blhAdminAuth" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="editBLHUsername">BLH Admin Username:</label>
+                                    <input type="text" id="editBLHUsername" placeholder="Enter username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editBLHPassword">BLH Admin Password:</label>
+                                    <div class="password-input-container">
+                                        <input type="password" id="editBLHPassword" placeholder="Enter password">
+                                        <button type="button" class="password-toggle" onclick="togglePassword('editBLHPassword')">👁️</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="editFormFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="editAvatarUrl">Avatar URL (Optional):</label>
+                            <input type="url" id="editAvatarUrl" placeholder="Paste Google Drive link or image URL" onchange="previewAvatar('edit')">
+                            <div class="avatar-controls">
+                                <img id="editAvatarPreview" class="avatar-preview" src="LOGO.png" alt="Avatar Preview">
+                                <button type="button" class="use-default-btn" onclick="useDefaultAvatar('edit')">Use Default Avatar</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editFullName">Full Name:</label>
+                                <input type="text" id="editFullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email:</label>
+                                <input type="email" id="editEmail" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editPhone">Phone:</label>
+                                <input type="tel" id="editPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBirthday">Birthday:</label>
+                                <input type="date" id="editBirthday" required>
+                            </div>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="editHideBirthday">
+                            <label for="editHideBirthday">Hide Birthday in Table</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAddress">Address:</label>
+                            <textarea id="editAddress" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editHubLocation">Hub Location:</label>
+                                <select id="editHubLocation" required>
+                                    <option value="">Select Hub Location</option>
+                                </select>
+                                <div class="field-info" id="editHubLocationInfo" style="display: none;">Only Super Admin can edit this field</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editHubDate">Hub Date (Optional):</label>
+                                <input type="date" id="editHubDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editGender">Gender:</label>
+                                <select id="editGender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <div class="field-info" id="editGenderInfo" style="display: none;">Only Super Admin can edit this field</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editJobDescription">Job Description:</label>
+                                <input type="text" id="editJobDescription" required>
+                                <div class="field-info" id="editJobDescriptionInfo" style="display: none;">Only Super Admin can edit this field</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmploymentStatus">Employment Status:</label>
+                            <select id="editEmploymentStatus" required>
+                                <option value="">Select Employment Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Casual">Casual</option>
+                                <option value="Job Order">Job Order</option>
+                            </select>
+                            <div class="field-info" id="editEmploymentStatusInfo" style="display: none;">Only Super Admin can edit this field</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editMiniLibrary">Mini Library Status:</label>
+                                <select id="editMiniLibrary" required onchange="toggleMiniLibraryDate('edit')">
+                                    <option value="">Select Status</option>
+                                    <option value="Equipped">Equipped</option>
+                                    <option value="Not Equipped">Not Equipped</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="editMiniLibraryDateGroup" style="display: none;">
+                                <label for="editMiniLibraryDate">Mini Library Date:</label>
+                                <input type="date" id="editMiniLibraryDate">
+                            </div>
+                        </div>
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label for="editNoOfUnits">No. Of Units:</label>
+                                <input type="number" id="editNoOfUnits" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTotalNoPerHalf">Total No. Per Half:</label>
+                                <input type="number" id="editTotalNoPerHalf" min="0" required>
+                                <div class="field-info" id="editTotalNoPerHalfInfo" style="display: none;">Only Super Admin can edit this field</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTargetPerHalf">Target Per Half:</label>
+                                <input type="number" id="editTargetPerHalf" min="0" required>
+                                <div class="field-info" id="editTargetPerHalfInfo" style="display: none;">Only Super Admin can edit this field</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editUsername">Username:</label>
+                                <input type="text" id="editUsername" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUserPassword">User Password:</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="editUserPassword" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('editUserPassword')">👁️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="validateEditAuth()">Authenticate</button>
+                <button type="button" class="btn btn-success" id="editSubmitBtn" onclick="submitEdit()" style="display: none;">Update Administrator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Administrator Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🗑️ Delete Administrator</h2>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="deleteAuthSection">
+                    <div class="form-group">
+                        <label for="deleteAuthType">Authentication Type:</label>
+                        <select id="deleteAuthType" onchange="toggleDeleteAuth()">
+                            <option value="">Select Authentication Type</option>
+                            <option value="superadmin">Super Admin</option>
+                            <option value="blhadmin">BLH Admin</option>
+                        </select>
+                    </div>
+                    <div id="deleteSuperAdminAuth" style="display: none;">
+                        <div class="form-group">
+                            <label for="deleteSuperPassword">Super Admin Password:</label>
+                            <div class="password-input-container">
+                                <input type="password" id="deleteSuperPassword" placeholder="Enter super admin password">
+                                <button type="button" class="password-toggle" onclick="togglePassword('deleteSuperPassword')">👁️</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="deleteBLHAdminAuth" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="deleteBLHUsername">BLH Admin Username:</label>
+                                <input type="text" id="deleteBLHUsername" placeholder="Enter username">
+                            </div>
+                            <div class="form-group">
+                                <label for="deleteBLHPassword">BLH Admin Password:</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="deleteBLHPassword" placeholder="Enter password">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('deleteBLHPassword')">👁️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="deleteConfirmSection" style="display: none;">
+                    <div style="background: #fef2f2; padding: 20px; border-radius: 12px; border: 2px solid #fecaca;">
+                        <h3 style="color: #dc2626; margin-bottom: 15px;">⚠️ Confirm Deletion</h3>
+                        <p style="color: #374151; margin-bottom: 15px;">You are about to delete the following administrator:</p>
+                        <div id="deleteAdminInfo" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">
+                        </div>
+                        <p style="color: #dc2626; font-weight: 600; margin-top: 15px;">This action cannot be undone!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="validateDeleteAuth()">Authenticate</button>
+                <button type="button" class="btn btn-danger" id="deleteSubmitBtn" onclick="submitDelete()" style="display: none;">Delete Administrator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDt2awd8Bw-SmBmTel4AdHMRuTNMOuYlMA",
+            authDomain: "blh-data-monitoring-backend.firebaseapp.com",
+            databaseURL: "https://blh-data-monitoring-backend-default-rtdb.firebaseio.com",
+            projectId: "blh-data-monitoring-backend",
+            storageBucket: "blh-data-monitoring-backend.firebasestorage.app",
+            messagingSenderId: "1060415123080",
+            appId: "1:1060415123080:web:da15422e446ebec4de793d",
+            measurementId: "G-66YLEKQWDS"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let administrators = [];
+        let filteredAdministrators = [];
+        let hubLocations = [];
+        let currentEditId = null;
+        let currentDeleteId = null;
+        let isEditingSuperAdmin = false;
+
+        // Convert Google Drive link to direct image URL
+        function convertGoogleDriveUrl(url) {
+            if (!url) return null;
+            
+            // Check if it's a Google Drive share link
+            const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch) {
+                const fileId = driveMatch[1];
+                return `https://drive.google.com/uc?export=view&id=${fileId}`;
+            }
+            
+            // Return the URL as is if it's not a Google Drive link
+            return url;
+        }
+
+        // Preview avatar function with improved error handling
+        window.previewAvatar = function(mode) {
+            const urlInput = document.getElementById(mode + 'AvatarUrl');
+            const preview = document.getElementById(mode + 'AvatarPreview');
+            
+            const url = urlInput.value.trim();
+            if (url) {
+                const convertedUrl = convertGoogleDriveUrl(url);
+                
+                // Create a new image to test if it loads
+                const testImg = new Image();
+                testImg.onload = function() {
+                    // Image loaded successfully
+                    preview.src = convertedUrl;
+                };
+                testImg.onerror = function() {
+                    // Only show error if it's not a Google Drive URL
+                    const driveMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                    if (!driveMatch) {
+                        preview.src = 'LOGO.png';
+                        showToast('Invalid image URL. Using default avatar.', 'warning');
+                    } else {
+                        // For Google Drive URLs, still try to use the converted URL
+                        // as the error might be due to CORS or loading delay
+                        preview.src = convertedUrl;
+                        // Set a fallback after a delay
+                        setTimeout(() => {
+                            if (preview.naturalWidth === 0) {
+                                preview.src = 'LOGO.png';
+                                showToast('Could not load Google Drive image. Using default avatar.', 'warning');
+                            }
+                        }, 3000);
+                    }
+                };
+                testImg.src = convertedUrl;
+            } else {
+                preview.src = 'LOGO.png';
+            }
+        }
+
+        // Use default avatar function
+        window.useDefaultAvatar = function(mode) {
+            const urlInput = document.getElementById(mode + 'AvatarUrl');
+            const preview = document.getElementById(mode + 'AvatarPreview');
+            
+            urlInput.value = '';
+            preview.src = 'LOGO.png';
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? '✅' : 
+                        type === 'error' ? '❌' : 
+                        type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            toast.innerHTML = `${icon} ${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'toastSlideOut 0.3s ease-out forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.className = 'connection-status connected';
+                statusElement.innerHTML = '🟢 Connected to Firebase';
+            } else {
+                statusElement.className = 'connection-status disconnected';
+                statusElement.innerHTML = '🔴 Firebase Connection Error';
+            }
+        }
+
+        // Load hub locations from Firebase
+        async function loadHubLocations() {
+            try {
+                const hubLocationsRef = collection(db, 'BLHLocation');
+                const querySnapshot = await getDocs(hubLocationsRef);
+                
+                hubLocations = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.BLHLocationName) {
+                        hubLocations.push(data.BLHLocationName);
+                    }
+                });
+
+                // Sort alphabetically
+                hubLocations.sort();
+
+                // Populate dropdowns
+                populateHubLocationDropdowns();
+                
+            } catch (error) {
+                console.error('Error loading hub locations:', error);
+                showToast('Failed to load hub locations', 'warning');
+            }
+        }
+
+        // Populate hub location dropdowns
+        function populateHubLocationDropdowns() {
+            const addSelect = document.getElementById('addHubLocation');
+            const editSelect = document.getElementById('editHubLocation');
+            
+            // Clear existing options (except first one)
+            addSelect.innerHTML = '<option value="">Select Hub Location</option>';
+            editSelect.innerHTML = '<option value="">Select Hub Location</option>';
+            
+            // Add hub locations
+            hubLocations.forEach(location => {
+                const addOption = document.createElement('option');
+                addOption.value = location;
+                addOption.textContent = location;
+                addSelect.appendChild(addOption);
+                
+                const editOption = document.createElement('option');
+                editOption.value = location;
+                editOption.textContent = location;
+                editSelect.appendChild(editOption);
+            });
+        }
+
+        // Toggle mini library date field
+        window.toggleMiniLibraryDate = function(mode) {
+            const selectId = mode + 'MiniLibrary';
+            const dateGroupId = mode + 'MiniLibraryDateGroup';
+            const dateInputId = mode + 'MiniLibraryDate';
+            
+            const select = document.getElementById(selectId);
+            const dateGroup = document.getElementById(dateGroupId);
+            const dateInput = document.getElementById(dateInputId);
+            
+            if (select.value === 'Equipped') {
+                dateGroup.style.display = 'block';
+                dateInput.required = true;
+            } else {
+                dateGroup.style.display = 'none';
+                dateInput.required = false;
+                dateInput.value = '';
+            }
+        }
+
+        // Calculate age from birthday
+        function calculateAge(birthday) {
+            if (!birthday) return 'N/A';
+            
+            let birthDate;
+            if (birthday.toDate) {
+                // Firebase Timestamp
+                birthDate = birthday.toDate();
+            } else if (typeof birthday === 'string') {
+                birthDate = new Date(birthday);
+            } else {
+                birthDate = new Date(birthday);
+            }
+            
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Format date
+        function formatDate(date) {
+            if (!date) return 'N/A';
+            
+            let dateObj;
+            if (date.toDate) {
+                // Firebase Timestamp
+                dateObj = date.toDate();
+            } else if (typeof date === 'string') {
+                dateObj = new Date(date);
+            } else {
+                dateObj = new Date(date);
+            }
+            
+            return dateObj.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        // Format date for input
+        function formatDateForInput(date) {
+            if (!date) return '';
+            
+            let dateObj;
+            if (date.toDate) {
+                dateObj = date.toDate();
+            } else if (typeof date === 'string') {
+                dateObj = new Date(date);
+            } else {
+                dateObj = new Date(date);
+            }
+            
+            return dateObj.toISOString().split('T')[0];
+        }
+
+        // Check if today is birthday
+        function isBirthday(birthday) {
+            if (!birthday) return false;
+            
+            let birthDate;
+            if (birthday.toDate) {
+                birthDate = birthday.toDate();
+            } else {
+                birthDate = new Date(birthday);
+            }
+            
+            const today = new Date();
+            return today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate();
+        }
+
+        // Check if birthday is this month
+        function isBirthMonth(birthday) {
+            if (!birthday) return false;
+            
+            let birthDate;
+            if (birthday.toDate) {
+                birthDate = birthday.toDate();
+            } else {
+                birthDate = new Date(birthday);
+            }
+            
+            const today = new Date();
+            return today.getMonth() === birthDate.getMonth();
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#fbbf24', '#f59e0b', '#3b82f6', '#10b981', '#ef4444'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animation = `confetti-fall ${confetti.style.animationDuration} ${confetti.style.animationDelay} ease-out forwards`;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, 5000);
+            }
+        }
+
+        // Show birthday message
+        function showBirthdayMessage(birthdayPeople) {
+            const birthdayMessage = document.getElementById('birthdayMessage');
+            
+            if (birthdayPeople.length === 1) {
+                birthdayMessage.innerHTML = `🎉 Happy Birthday ${birthdayPeople[0].BLHAdminFullName || birthdayPeople[0].name}! 🎂`;
+            } else if (birthdayPeople.length === 2) {
+                birthdayMessage.innerHTML = `🎉 Happy Birthday ${birthdayPeople[0].BLHAdminFullName || birthdayPeople[0].name} & ${birthdayPeople[1].BLHAdminFullName || birthdayPeople[1].name}! 🎂`;
+            } else if (birthdayPeople.length > 2) {
+                const names = birthdayPeople.map(person => person.BLHAdminFullName || person.name).join(', ');
+                birthdayMessage.innerHTML = `🎉 Happy Birthday ${names}! 🎂`;
+            }
+            
+            birthdayMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                birthdayMessage.style.display = 'none';
+            }, 4000);
+        }
+
+        // Check for birthdays
+        function checkBirthdays() {
+            const birthdayPeople = administrators.filter(person => isBirthday(person.birthday));
+            
+            if (birthdayPeople.length > 0) {
+                createConfetti();
+                showBirthdayMessage(birthdayPeople);
+            }
+        }
+
+        // Get first name from full name
+        function getFirstName(fullName) {
+            if (!fullName) return '';
+            return fullName.split(' ')[0];
+        }
+
+        // Render table with data
+        function renderTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            const table = document.getElementById('peopleTable');
+            const noResults = document.getElementById('noResults');
+            
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                table.style.display = 'none';
+                noResults.style.display = 'block';
+                document.getElementById('showingCount').textContent = '0';
+                return;
+            }
+            
+            table.style.display = 'table';
+            noResults.style.display = 'none';
+            
+            data.forEach((person, index) => {
+                const row = document.createElement('tr');
+                row.classList.add('fade-in');
+                row.style.animationDelay = `${index * 0.05}s`;
+                
+                // Check if it's their birthday
+                if (isBirthday(person.birthday)) {
+                    row.classList.add('birthday-row');
+                }
+                
+                const avatarClass = isBirthMonth(person.birthday) ? 'avatar birthday-month' : 'avatar';
+                
+                // Use avatar URL if available, otherwise use default LOGO.png
+                const avatarUrl = person.avatar ? convertGoogleDriveUrl(person.avatar) : "LOGO.png";
+                
+                // Check if birthday should be hidden
+                const birthdayDisplay = person.hideBirthday ? 
+                    '<div class="birthday-age"><div class="birthday">Not Available</div><div class="age">Not Available</div></div>' :
+                    `<div class="birthday-age"><div class="birthday">${formatDate(person.birthday)}</div><div class="age">${calculateAge(person.birthday)} years old</div></div>`;
+
+                // Mini Library Status with conditional date
+                const miniLibraryClass = person.miniLibrary === 'Equipped' ? 'equipped' : 'not-equipped';
+                const miniLibraryDateDisplay = person.miniLibrary === 'Equipped' && person.miniLibraryDate ? 
+                    `<div class="mini-library-date">${formatDate(person.miniLibraryDate)}</div>` : '';
+                const miniLibraryDisplay = `<div class="mini-library-status ${miniLibraryClass}">${person.miniLibrary || 'Not Set'}</div>${miniLibraryDateDisplay}`;
+
+                // Hub date display
+                const hubDateDisplay = person.hubDate ? `<div class="hub-date">${formatDate(person.hubDate)}</div>` : '';
+
+                row.innerHTML = `
+                    <td><img src="${avatarUrl}" alt="${person.BLHAdminFullName || 'Admin'}" class="${avatarClass}" onerror="this.src='LOGO.png'"></td>
+                    <td>
+                        <div class="fullname-info">
+                            <div class="fullname">${person.BLHAdminFullName || 'N/A'}</div>
+                            <div class="job-employment">
+                                <div class="job-description">${person.jobDescription || 'N/A'}</div>
+                                <div class="employment-status">${person.employmentStatus || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${birthdayDisplay}</td>
+                    <td><div class="address">${person.BLHAdminAddress || 'N/A'}</div></td>
+                    <td>
+                        <div class="contact-info">
+                            <div>📧 ${person.email || 'N/A'}</div>
+                            <div>📞 ${person.phone || 'N/A'}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="hub-date-combined">
+                            <div class="hub-location">${person.hubLocation || 'N/A'}</div>
+                            ${hubDateDisplay}
+                        </div>
+                    </td>
+                    <td>${miniLibraryDisplay}</td>
+                    <td><div class="number-field">${person.noOfUnits || 0}</div></td>
+                    <td><div class="number-field">${person.totalNoPerHalf || 0}</div></td>
+                    <td><div class="number-field">${person.targetPerHalf || 0}</div></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="edit-btn" onclick="openEditModal('${person.id}')" title="Edit Administrator">
+                                ✏️
+                            </button>
+                            <button class="delete-btn" onclick="openDeleteModal('${person.id}')" title="Delete Administrator">
+                                🗑️
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('showingCount').textContent = data.length;
+            filteredAdministrators = data;
+        }
+
+        // Sort administrators
+        function sortAdministrators(data, sortType) {
+            return data.sort((a, b) => {
+                if (sortType === 'firstname') {
+                    const firstNameA = getFirstName(a.BLHAdminFullName || '').toLowerCase();
+                    const firstNameB = getFirstName(b.BLHAdminFullName || '').toLowerCase();
+                    return firstNameA.localeCompare(firstNameB);
+                } else if (sortType === 'hub') {
+                    const hubA = (a.hubLocation || '').toLowerCase();
+                    const hubB = (b.hubLocation || '').toLowerCase();
+                    return hubA.localeCompare(hubB);
+                }
+                return 0;
+            });
+        }
+
+        // Filter administrators
+        function filterAdministrators(searchTerm) {
+            let filtered = administrators;
+            
+            // Apply employment status filter
+            const employmentFilter = document.getElementById('employmentFilter').value;
+            if (employmentFilter) {
+                filtered = filtered.filter(admin => admin.employmentStatus === employmentFilter);
+            }
+            
+            // Apply mini library filter
+            const miniLibraryFilter = document.getElementById('miniLibraryFilter').value;
+            if (miniLibraryFilter) {
+                if (miniLibraryFilter === 'Not Set') {
+                    filtered = filtered.filter(admin => !admin.miniLibrary || admin.miniLibrary === '');
+                } else {
+                    filtered = filtered.filter(admin => admin.miniLibrary === miniLibraryFilter);
+                }
+            }
+            
+            // Apply search filter
+            if (searchTerm.trim()) {
+                filtered = filtered.filter(admin => {
+                    const fullName = (admin.BLHAdminFullName || '').toLowerCase();
+                    const address = (admin.BLHAdminAddress || '').toLowerCase();
+                    const hubLocation = (admin.hubLocation || '').toLowerCase();
+                    const email = (admin.email || '').toLowerCase();
+                    
+                    return fullName.includes(searchTerm.toLowerCase()) ||
+                           address.includes(searchTerm.toLowerCase()) ||
+                           hubLocation.includes(searchTerm.toLowerCase()) ||
+                           email.includes(searchTerm.toLowerCase());
+                });
+            }
+            
+            // Apply sorting
+            const sortType = document.getElementById('sortFilter').value;
+            filtered = sortAdministrators(filtered, sortType);
+            
+            renderTable(filtered);
+        }
+
+        // Load administrators from Firebase
+        async function loadAdministrators() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                
+                // Get the collection reference
+                const administratorsRef = collection(db, 'BLHAdministrator');
+                
+                // Set up real-time listener
+                const unsubscribe = onSnapshot(administratorsRef, (querySnapshot) => {
+                    administrators = [];
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        administrators.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    });
+                    
+                    // Update UI
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('totalCount').textContent = administrators.length;
+                    
+                    updateConnectionStatus(true);
+                    
+                    if (administrators.length > 0) {
+                        // Apply default sorting (by hub location)
+                        const sorted = sortAdministrators([...administrators], 'hub');
+                        renderTable(sorted);
+                        checkBirthdays();
+                        showToast('Administrator data loaded successfully!', 'success');
+                    } else {
+                        renderTable([]);
+                        showToast('No administrator data found.', 'warning');
+                    }
+                }, (error) => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorText').textContent = 'Failed to load data from Firebase: ' + error.message;
+                    updateConnectionStatus(false);
+                    showToast('Failed to load data from Firebase', 'error');
+                });
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorText').textContent = 'Failed to connect to Firebase: ' + error.message;
+                updateConnectionStatus(false);
+                showToast('Failed to connect to Firebase', 'error');
+            }
+        }
+
+        // Modal functions
+        window.openAddModal = function() {
+            document.getElementById('addModal').style.display = 'block';
+            // Reset modal state
+            document.getElementById('addForm').reset();
+            document.getElementById('addFormFields').style.display = 'none';
+            document.getElementById('addSubmitBtn').style.display = 'none';
+            document.querySelector('#addModal .btn-primary').style.display = 'inline-flex';
+            document.getElementById('addMiniLibraryDateGroup').style.display = 'none';
+            document.getElementById('addAvatarPreview').src = 'LOGO.png';
+        }
+
+        window.closeAddModal = function() {
+            document.getElementById('addModal').style.display = 'none';
+        }
+
+        window.openEditModal = function(id) {
+            currentEditId = id;
+            const admin = administrators.find(a => a.id === id);
+            if (admin) {
+                document.getElementById('editModal').style.display = 'block';
+                // Reset modal state
+                document.getElementById('editForm').reset();
+                document.getElementById('editFormFields').style.display = 'none';
+                document.getElementById('editSubmitBtn').style.display = 'none';
+                document.querySelector('#editModal .btn-primary').style.display = 'inline-flex';
+                document.getElementById('editAuthType').value = '';
+                document.getElementById('superAdminAuth').style.display = 'none';
+                document.getElementById('blhAdminAuth').style.display = 'none';
+                document.getElementById('editMiniLibraryDateGroup').style.display = 'none';
+                document.getElementById('editAvatarPreview').src = 'LOGO.png';
+                isEditingSuperAdmin = false;
+            }
+        }
+
+        window.closeEditModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditId = null;
+            isEditingSuperAdmin = false;
+        }
+
+        window.openDeleteModal = function(id) {
+            currentDeleteId = id;
+            const admin = administrators.find(a => a.id === id);
+            if (admin) {
+                document.getElementById('deleteModal').style.display = 'block';
+                // Reset modal state
+                document.getElementById('deleteAuthType').value = '';
+                document.getElementById('deleteSuperAdminAuth').style.display = 'none';
+                document.getElementById('deleteBLHAdminAuth').style.display = 'none';
+                document.getElementById('deleteConfirmSection').style.display = 'none';
+                document.getElementById('deleteSubmitBtn').style.display = 'none';
+                document.querySelector('#deleteModal .btn-primary').style.display = 'inline-flex';
+            }
+        }
+
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').style.display = 'none';
+            currentDeleteId = null;
+        }
+
+        // Password toggle function
+        window.togglePassword = function(inputId) {
+            const input = document.getElementById(inputId);
+            const toggle = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+
+        // Add modal functions
+        window.validateAddPassword = function() {
+            const password = document.getElementById('addPassword').value;
+            if (password === 'blhadmin2026') {
+                document.getElementById('addFormFields').style.display = 'block';
+                document.getElementById('addSubmitBtn').style.display = 'inline-flex';
+                document.querySelector('#addModal .btn-primary').style.display = 'none';
+                showToast('Password validated! Please fill in the administrator details.', 'success');
+            } else {
+                showToast('Invalid password! Please try again.', 'error');
+            }
+        }
+
+        window.submitAdd = async function() {
+            try {
+                const avatarUrl = document.getElementById('addAvatarUrl').value.trim();
+                
+                const formData = {
+                    BLHAdminFullName: document.getElementById('addFullName').value,
+                    email: document.getElementById('addEmail').value,
+                    phone: document.getElementById('addPhone').value,
+                    birthday: new Date(document.getElementById('addBirthday').value),
+                    hideBirthday: document.getElementById('addHideBirthday').checked,
+                    BLHAdminAddress: document.getElementById('addAddress').value,
+                    hubLocation: document.getElementById('addHubLocation').value,
+                    gender: document.getElementById('addGender').value,
+                    jobDescription: document.getElementById('addJobDescription').value,
+                    employmentStatus: document.getElementById('addEmploymentStatus').value,
+                    miniLibrary: document.getElementById('addMiniLibrary').value,
+                    noOfUnits: parseInt(document.getElementById('addNoOfUnits').value) || 0,
+                    totalNoPerHalf: parseInt(document.getElementById('addTotalNoPerHalf').value) || 0,
+                    targetPerHalf: parseInt(document.getElementById('addTargetPerHalf').value) || 0,
+                    username: document.getElementById('addUsername').value,
+                    password: document.getElementById('addUserPassword').value,
+                    createdAt: new Date(),
+                    activeStatus: 'In Service',
+                    deleteStatus: 1
+                };
+
+                // Add avatar URL if provided
+                if (avatarUrl) {
+                    formData.avatar = avatarUrl;
+                }
+
+                // Add hub date if provided
+                const hubDate = document.getElementById('addHubDate').value;
+                if (hubDate) {
+                    formData.hubDate = new Date(hubDate);
+                }
+
+                // Add mini library date if equipped
+                if (formData.miniLibrary === 'Equipped') {
+                    const miniLibraryDate = document.getElementById('addMiniLibraryDate').value;
+                    if (miniLibraryDate) {
+                        formData.miniLibraryDate = new Date(miniLibraryDate);
+                    }
+                }
+
+                await addDoc(collection(db, 'BLHAdministrator'), formData);
+                showToast('Administrator added successfully!', 'success');
+                closeAddModal();
+            } catch (error) {
+                showToast('Error adding administrator: ' + error.message, 'error');
+            }
+        }
+
+        // Edit modal functions
+        window.toggleEditAuth = function() {
+            const authType = document.getElementById('editAuthType').value;
+            document.getElementById('superAdminAuth').style.display = authType === 'superadmin' ? 'block' : 'none';
+            document.getElementById('blhAdminAuth').style.display = authType === 'blhadmin' ? 'block' : 'none';
+        }
+
+        window.validateEditAuth = function() {
+            const authType = document.getElementById('editAuthType').value;
+            
+            if (authType === 'superadmin') {
+                const password = document.getElementById('editSuperPassword').value;
+                if (password === 'blhadmin2026') {
+                    isEditingSuperAdmin = true;
+                    showEditForm();
+                } else {
+                    showToast('Invalid super admin password!', 'error');
+                }
+            } else if (authType === 'blhadmin') {
+                const username = document.getElementById('editBLHUsername').value;
+                const password = document.getElementById('editBLHPassword').value;
+                
+                const admin = administrators.find(a => a.username === username && a.password === password);
+                if (admin) {
+                    isEditingSuperAdmin = false;
+                    showEditForm();
+                } else {
+                    showToast('Invalid BLH admin credentials!', 'error');
+                }
+            } else {
+                showToast('Please select an authentication type!', 'warning');
+            }
+        }
+
+        function showEditForm() {
+            const admin = administrators.find(a => a.id === currentEditId);
+            if (admin) {
+                document.getElementById('editAvatarUrl').value = admin.avatar || '';
+                document.getElementById('editAvatarPreview').src = admin.avatar ? convertGoogleDriveUrl(admin.avatar) : 'LOGO.png';
+                document.getElementById('editFullName').value = admin.BLHAdminFullName || '';
+                document.getElementById('editEmail').value = admin.email || '';
+                document.getElementById('editPhone').value = admin.phone || '';
+                document.getElementById('editBirthday').value = formatDateForInput(admin.birthday);
+                document.getElementById('editHideBirthday').checked = admin.hideBirthday || false;
+                document.getElementById('editAddress').value = admin.BLHAdminAddress || '';
+                document.getElementById('editHubLocation').value = admin.hubLocation || '';
+                document.getElementById('editHubDate').value = formatDateForInput(admin.hubDate);
+                document.getElementById('editGender').value = admin.gender || '';
+                document.getElementById('editJobDescription').value = admin.jobDescription || '';
+                document.getElementById('editEmploymentStatus').value = admin.employmentStatus || '';
+                document.getElementById('editMiniLibrary').value = admin.miniLibrary || '';
+                document.getElementById('editNoOfUnits').value = admin.noOfUnits || 0;
+                document.getElementById('editTotalNoPerHalf').value = admin.totalNoPerHalf || 0;
+                document.getElementById('editTargetPerHalf').value = admin.targetPerHalf || 0;
+                document.getElementById('editUsername').value = admin.username || '';
+                document.getElementById('editUserPassword').value = admin.password || '';
+                
+                // Handle mini library date
+                if (admin.miniLibrary === 'Equipped' && admin.miniLibraryDate) {
+                    document.getElementById('editMiniLibraryDateGroup').style.display = 'block';
+                    document.getElementById('editMiniLibraryDate').value = formatDateForInput(admin.miniLibraryDate);
+                    document.getElementById('editMiniLibraryDate').required = true;
+                } else {
+                    document.getElementById('editMiniLibraryDateGroup').style.display = 'none';
+                    document.getElementById('editMiniLibraryDate').required = false;
+                }
+                
+                // Set field restrictions based on authentication type
+                const restrictedFields = ['editHubLocation', 'editGender', 'editJobDescription', 'editEmploymentStatus', 'editTotalNoPerHalf', 'editTargetPerHalf'];
+                const infoFields = ['editHubLocationInfo', 'editGenderInfo', 'editJobDescriptionInfo', 'editEmploymentStatusInfo', 'editTotalNoPerHalfInfo', 'editTargetPerHalfInfo'];
+                
+                if (!isEditingSuperAdmin) {
+                    restrictedFields.forEach((fieldId, index) => {
+                        const field = document.getElementById(fieldId);
+                        const info = document.getElementById(infoFields[index]);
+                        field.disabled = true;
+                        info.style.display = 'block';
+                    });
+                    // No. Of Units is editable by BLH Admin
+                    document.getElementById('editNoOfUnits').disabled = false;
+                } else {
+                    restrictedFields.forEach((fieldId, index) => {
+                        const field = document.getElementById(fieldId);
+                        const info = document.getElementById(infoFields[index]);
+                        field.disabled = false;
+                        info.style.display = 'none';
+                    });
+                    document.getElementById('editNoOfUnits').disabled = false;
+                }
+                
+                document.getElementById('editFormFields').style.display = 'block';
+                document.getElementById('editSubmitBtn').style.display = 'inline-flex';
+                document.querySelector('#editModal .btn-primary').style.display = 'none';
+                showToast('Authentication successful! You can now edit the administrator.', 'success');
+            }
+        }
+
+        window.submitEdit = async function() {
+            try {
+                const admin = administrators.find(a => a.id === currentEditId);
+                
+                // Check if BLH admin is trying to edit restricted fields
+                if (!isEditingSuperAdmin) {
+                    const currentHubLocation = document.getElementById('editHubLocation').value;
+                    const currentGender = document.getElementById('editGender').value;
+                    const currentJobDescription = document.getElementById('editJobDescription').value;
+                    const currentEmploymentStatus = document.getElementById('editEmploymentStatus').value;
+                    const currentTotalNoPerHalf = parseInt(document.getElementById('editTotalNoPerHalf').value) || 0;
+                    const currentTargetPerHalf = parseInt(document.getElementById('editTargetPerHalf').value) || 0;
+                    
+                    if (currentHubLocation !== (admin.hubLocation || '') || 
+                        currentGender !== (admin.gender || '') ||
+                        currentJobDescription !== (admin.jobDescription || '') ||
+                        currentEmploymentStatus !== (admin.employmentStatus || '') ||
+                        currentTotalNoPerHalf !== (admin.totalNoPerHalf || 0) || 
+                        currentTargetPerHalf !== (admin.targetPerHalf || 0)) {
+                        showToast('You cannot edit Hub Location, Gender, Job Description, Employment Status, Total No. Per Half, or Target Per Half fields!', 'error');
+                        return;
+                    }
+                }
+
+                const avatarUrl = document.getElementById('editAvatarUrl').value.trim();
+
+                const formData = {
+                    BLHAdminFullName: document.getElementById('editFullName').value,
+                    email: document.getElementById('editEmail').value,
+                    phone: document.getElementById('editPhone').value,
+                    birthday: new Date(document.getElementById('editBirthday').value),
+                    hideBirthday: document.getElementById('editHideBirthday').checked,
+                    BLHAdminAddress: document.getElementById('editAddress').value,
+                    miniLibrary: document.getElementById('editMiniLibrary').value,
+                    noOfUnits: parseInt(document.getElementById('editNoOfUnits').value) || 0,
+                    username: document.getElementById('editUsername').value,
+                    password: document.getElementById('editUserPassword').value
+                };
+
+                // Add avatar URL if provided, otherwise remove it
+                if (avatarUrl) {
+                    formData.avatar = avatarUrl;
+                } else {
+                    formData.avatar = null;
+                }
+
+                // Add hub date if provided
+                const hubDate = document.getElementById('editHubDate').value;
+                if (hubDate) {
+                    formData.hubDate = new Date(hubDate);
+                } else {
+                    formData.hubDate = null;
+                }
+
+                // Only update restricted fields if super admin
+                if (isEditingSuperAdmin) {
+                    formData.hubLocation = document.getElementById('editHubLocation').value;
+                    formData.gender = document.getElementById('editGender').value;
+                    formData.jobDescription = document.getElementById('editJobDescription').value;
+                    formData.employmentStatus = document.getElementById('editEmploymentStatus').value;
+                    formData.totalNoPerHalf = parseInt(document.getElementById('editTotalNoPerHalf').value) || 0;
+                    formData.targetPerHalf = parseInt(document.getElementById('editTargetPerHalf').value) || 0;
+                }
+
+                // Handle mini library date
+                if (formData.miniLibrary === 'Equipped') {
+                    const miniLibraryDate = document.getElementById('editMiniLibraryDate').value;
+                    if (miniLibraryDate) {
+                        formData.miniLibraryDate = new Date(miniLibraryDate);
+                    }
+                } else {
+                    // Remove mini library date if not equipped
+                    formData.miniLibraryDate = null;
+                }
+
+                await updateDoc(doc(db, 'BLHAdministrator', currentEditId), formData);
+                showToast('Administrator updated successfully!', 'success');
+                closeEditModal();
+            } catch (error) {
+                showToast('Error updating administrator: ' + error.message, 'error');
+            }
+        }
+
+        // Delete modal functions
+        window.toggleDeleteAuth = function() {
+            const authType = document.getElementById('deleteAuthType').value;
+            document.getElementById('deleteSuperAdminAuth').style.display = authType === 'superadmin' ? 'block' : 'none';
+            document.getElementById('deleteBLHAdminAuth').style.display = authType === 'blhadmin' ? 'block' : 'none';
+        }
+
+        window.validateDeleteAuth = function() {
+            const authType = document.getElementById('deleteAuthType').value;
+            
+            if (authType === 'superadmin') {
+                const password = document.getElementById('deleteSuperPassword').value;
+                if (password === 'blhadmin2026') {
+                    showDeleteConfirm();
+                } else {
+                    showToast('Invalid super admin password!', 'error');
+                }
+            } else if (authType === 'blhadmin') {
+                const username = document.getElementById('deleteBLHUsername').value;
+                const password = document.getElementById('deleteBLHPassword').value;
+                
+                const admin = administrators.find(a => a.username === username && a.password === password);
+                if (admin) {
+                    showDeleteConfirm();
+                } else {
+                    showToast('Invalid BLH admin credentials!', 'error');
+                }
+            } else {
+                showToast('Please select an authentication type!', 'warning');
+            }
+        }
+
+        function showDeleteConfirm() {
+            const admin = administrators.find(a => a.id === currentDeleteId);
+            if (admin) {
+                document.getElementById('deleteAdminInfo').innerHTML = `
+                    <strong>Name:</strong> ${admin.BLHAdminFullName || 'N/A'}<br>
+                    <strong>Email:</strong> ${admin.email || 'N/A'}<br>
+                    <strong>Username:</strong> ${admin.username || 'N/A'}<br>
+                    <strong>Hub Location:</strong> ${admin.hubLocation || 'N/A'}<br>
+                    <strong>Job Description:</strong> ${admin.jobDescription || 'N/A'}
+                `;
+                
+                document.getElementById('deleteConfirmSection').style.display = 'block';
+                document.getElementById('deleteSubmitBtn').style.display = 'inline-flex';
+                document.querySelector('#deleteModal .btn-primary').style.display = 'none';
+                showToast('Authentication successful! Please confirm deletion.', 'success');
+            }
+        }
+
+        window.submitDelete = async function() {
+            try {
+                await deleteDoc(doc(db, 'BLHAdministrator', currentDeleteId));
+                showToast('Administrator deleted successfully!', 'success');
+                closeDeleteModal();
+            } catch (error) {
+                showToast('Error deleting administrator: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize search and sort functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterAdministrators(e.target.value);
+        });
+
+        document.getElementById('sortFilter').addEventListener('change', (e) => {
+            const searchTerm = document.getElementById('searchInput').value;
+            filterAdministrators(searchTerm);
+        });
+
+        document.getElementById('employmentFilter').addEventListener('change', (e) => {
+            const searchTerm = document.getElementById('searchInput').value;
+            filterAdministrators(searchTerm);
+        });
+
+        document.getElementById('miniLibraryFilter').addEventListener('change', (e) => {
+            const searchTerm = document.getElementById('searchInput').value;
+            filterAdministrators(searchTerm);
+        });
+
+        // Close modals when clicking X or outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'addModal') closeAddModal();
+                if (e.target.id === 'editModal') closeEditModal();
+                if (e.target.id === 'deleteModal') closeDeleteModal();
+            }
+        });
+
+        // ESC key to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('addModal').style.display === 'block') closeAddModal();
+                if (document.getElementById('editModal').style.display === 'block') closeEditModal();
+                if (document.getElementById('deleteModal').style.display === 'block') closeDeleteModal();
+            }
+        });
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHubLocations();
+            loadAdministrators();
+        });
+
+        // Hide connection status after 3 seconds if connected
+        setTimeout(() => {
+            const statusElement = document.getElementById('connectionStatus');
+            if (statusElement.classList.contains('connected')) {
+                statusElement.style.display = 'none';
+            }
+        }, 3000);
+
+    </script>
+
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+Shift+C
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+I (Developer Tools)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+J (Console)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Ctrl+Shift+C (Inspect Element)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection
+        document.onselectstart = function() {
+            return false;
+        };
+
+        // Disable drag
+        document.ondragstart = function() {
+            return false;
+        };
+
+        // Clear console periodically
+        setInterval(function() {
+            console.clear();
+        }, 1000);
+
+        // Override console methods
+        (function() {
+            var _log = console.log;
+            var _warn = console.warn;
+            var _error = console.error;
+            
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+        })();
+    </script>
+</body>
+</html>

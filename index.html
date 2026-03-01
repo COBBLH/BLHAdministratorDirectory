@@ -104,6 +104,14 @@
             font-size: 30px;
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
         }
 
         .header p {
@@ -1094,7 +1102,7 @@
         <div class="header">
             <div class="header-content">
                 <h1>
-                    <div class="logo">🏢</div>
+                    <div class="logo"><img src="Official_Seal_Balanga_City.png" alt="Official Seal" /></div>
                     BLH Administrator Directory
                 </h1>
                 <p>Professional database of our BLH administrators - Firebase Connected</p>

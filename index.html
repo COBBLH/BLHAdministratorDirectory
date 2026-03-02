@@ -209,6 +209,28 @@
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
 
+        .change-password-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .change-password-btn:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+        }
+
         .stats {
             padding: 20px 0;
             background: linear-gradient(to right, #1e40af, #3b82f6);
@@ -988,6 +1010,12 @@
             transform: translateY(-1px);
         }
 
+        .action-buttons-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -1032,6 +1060,17 @@
             .filter-select {
                 min-width: auto;
                 width: 100%;
+            }
+
+            .action-buttons-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .add-employee-btn,
+            .change-password-btn {
+                width: 100%;
+                justify-content: center;
             }
             
             .th, td {
@@ -1131,9 +1170,14 @@
                     <option value="Not Set">Not Set</option>
                 </select>
             </div>
-            <button class="add-employee-btn" onclick="openAddModal()">
-                ➕ Add Administrator
-            </button>
+            <div class="action-buttons-container">
+                <button class="add-employee-btn" onclick="openAddModal()">
+                    ➕ Add Administrator
+                </button>
+                <button class="change-password-btn" onclick="openPasswordModal()">
+                    🔑 Change Super Admin Password
+                </button>
+            </div>
         </div>
 
         <div class="stats">
@@ -1179,6 +1223,45 @@
     <!-- Birthday Message -->
     <div id="birthdayMessage" class="birthday-message">
         🎉 Happy Birthday! 🎂
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔑 Change Super Admin Password</h2>
+                <span class="close" onclick="closePasswordModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password:</label>
+                        <div class="password-input-container">
+                            <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('currentPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <div class="password-input-container">
+                            <input type="password" id="newPassword" placeholder="Enter new password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">👁️</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password:</label>
+                        <div class="password-input-container">
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="changePassword()">Change Password</button>
+            </div>
+        </div>
     </div>
 
     <!-- Add Administrator Modal -->
@@ -1558,7 +1641,7 @@
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1582,6 +1665,80 @@
         let currentEditId = null;
         let currentDeleteId = null;
         let isEditingSuperAdmin = false;
+        let systemPassword = 'blhadmin2026'; // Default password
+
+        // Load system password from Firebase
+        async function loadSystemPassword() {
+            try {
+                const passwordDoc = await getDocs(collection(db, 'SystemSettings'));
+                passwordDoc.forEach((doc) => {
+                    if (doc.id === 'adminPassword') {
+                        systemPassword = doc.data().password || 'blhadmin2026';
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading system password:', error);
+                // Keep default password if error
+            }
+        }
+
+        // Save system password to Firebase
+        async function saveSystemPassword(newPassword) {
+            try {
+                await setDoc(doc(db, 'SystemSettings', 'adminPassword'), {
+                    password: newPassword,
+                    updatedAt: new Date()
+                });
+                systemPassword = newPassword;
+                return true;
+            } catch (error) {
+                console.error('Error saving system password:', error);
+                return false;
+            }
+        }
+
+        // Password change modal functions
+        window.openPasswordModal = function() {
+            document.getElementById('passwordModal').style.display = 'block';
+            document.getElementById('passwordForm').reset();
+        }
+
+        window.closePasswordModal = function() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        window.changePassword = async function() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validate current password
+            if (currentPassword !== systemPassword) {
+                showToast('Current password is incorrect!', 'error');
+                return;
+            }
+
+            // Validate new password
+            if (newPassword.length < 6) {
+                showToast('New password must be at least 6 characters long!', 'error');
+                return;
+            }
+
+            // Validate password confirmation
+            if (newPassword !== confirmPassword) {
+                showToast('New password and confirmation do not match!', 'error');
+                return;
+            }
+
+            // Save new password
+            const success = await saveSystemPassword(newPassword);
+            if (success) {
+                showToast('Password changed successfully!', 'success');
+                closePasswordModal();
+            } else {
+                showToast('Failed to change password. Please try again.', 'error');
+            }
+        }
 
         // Convert Google Drive link to direct image URL
         function convertGoogleDriveUrl(url) {
@@ -2185,7 +2342,7 @@
         // Add modal functions
         window.validateAddPassword = function() {
             const password = document.getElementById('addPassword').value;
-            if (password === 'blhadmin2026') {
+            if (password === systemPassword) {
                 document.getElementById('addFormFields').style.display = 'block';
                 document.getElementById('addSubmitBtn').style.display = 'inline-flex';
                 document.querySelector('#addModal .btn-primary').style.display = 'none';
@@ -2260,7 +2417,7 @@
             
             if (authType === 'superadmin') {
                 const password = document.getElementById('editSuperPassword').value;
-                if (password === 'blhadmin2026') {
+                if (password === systemPassword) {
                     isEditingSuperAdmin = true;
                     showEditForm();
                 } else {
@@ -2440,7 +2597,7 @@
             
             if (authType === 'superadmin') {
                 const password = document.getElementById('deleteSuperPassword').value;
-                if (password === 'blhadmin2026') {
+                if (password === systemPassword) {
                     showDeleteConfirm();
                 } else {
                     showToast('Invalid super admin password!', 'error');
@@ -2514,6 +2671,7 @@
                 if (e.target.id === 'addModal') closeAddModal();
                 if (e.target.id === 'editModal') closeEditModal();
                 if (e.target.id === 'deleteModal') closeDeleteModal();
+                if (e.target.id === 'passwordModal') closePasswordModal();
             }
         });
 
@@ -2523,13 +2681,16 @@
                 if (document.getElementById('addModal').style.display === 'block') closeAddModal();
                 if (document.getElementById('editModal').style.display === 'block') closeEditModal();
                 if (document.getElementById('deleteModal').style.display === 'block') closeDeleteModal();
+                if (document.getElementById('passwordModal').style.display === 'block') closePasswordModal();
             }
         });
 
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            loadHubLocations();
-            loadAdministrators();
+            loadSystemPassword().then(() => {
+                loadHubLocations();
+                loadAdministrators();
+            });
         });
 
         // Hide connection status after 3 seconds if connected
